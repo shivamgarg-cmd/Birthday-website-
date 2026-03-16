@@ -634,3 +634,20 @@ window.addEventListener('scroll',()=>{
 dots.forEach(d => d.classList.remove('active'));
 dots[cur].classList.add('active');
 });
+// Reveal sections when scrolling
+const reveals = document.querySelectorAll(".reveal");
+
+function revealOnScroll(){
+  const windowHeight = window.innerHeight;
+
+  reveals.forEach(el => {
+    const elementTop = el.getBoundingClientRect().top;
+
+    if(elementTop < windowHeight - 100){
+      el.classList.add("visible");
+    }
+  });
+}
+
+window.addEventListener("scroll", revealOnScroll);
+revealOnScroll();
