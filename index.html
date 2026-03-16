@@ -627,4 +627,10 @@ window.addEventListener('scroll',()=>{
   let cur=0;
   sections.forEach((id,i)=>{
     const el=document.getElementById(id);
-    if(window.scrollY>=el.offsetTop-
+    if(window.scrollY >= el.offsetTop - window.innerHeight/2){
+  cur = i;
+}
+});
+dots.forEach(d => d.classList.remove('active'));
+dots[cur].classList.add('active');
+});
