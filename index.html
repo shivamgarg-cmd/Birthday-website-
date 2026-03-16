@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Happy Birthday Kannu! 🎂</title>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Pacifico&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #FFD700;
+    --hot: #FF3CAC;
+    --cyan: #00F5FF;
+    --orange: #FF6B35;
+    --purple: #784BA0;
+    --dark: #0D0D1A;
+    --card: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    font-family: 'Nunito', sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 18px; height: 18px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, background 0.15s ease;
+    transform: translate(-50%, -50%);
+  }
+  .cursor.clicked { transform: translate(-50%,-50%) scale(2); background: rgba(255,215,0,0.3); }
+
+  /* CANVAS */
+  #bgCanvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 1; }
+
+  /* ───── HERO ───── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-badge {
+    background: linear-gradient(90deg, var(--hot), var(--orange));
+    padding: 0.35rem 1.2rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .hero-name {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(3.5rem, 12vw, 9rem);
+    line-height: 1;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 40%, var(--hot) 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeDown 0.9s 0.1s ease both;
+    filter: drop-shadow(0 0 40px rgba(255,107,53,0.5));
+  }
+
+  .hero-aka {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(1.2rem, 4vw, 2rem);
+    color: var(--cyan);
+    letter-spacing: 0.15em;
+    margin-top: 0.5rem;
+    animation: fadeDown 1s 0.2s ease both;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: rgba(255,255,255,0.6);
+    margin-top: 1.5rem;
+    animation: fadeDown 1s 0.3s ease both;
+  }
+
+  .scroll-btn {
+    margin-top: 3rem;
+    padding: 0.9rem 2.5rem;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--hot), var(--orange));
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    animation: fadeDown 1s 0.5s ease both, pulse 2s 1.5s ease infinite;
+    transition: transform 0.2s;
+    box-shadow: 0 0 30px rgba(255,60,172,0.5);
+  }
+  .scroll-btn:hover { transform: scale(1.07); }
+
+  /* floating emojis */
+  .floaters {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  }
+  .floater {
+    position: absolute;
+    font-size: 2.5rem;
+    animation: floatUp linear infinite;
+    opacity: 0;
+  }
+
+  /* ───── NAV DOTS ───── */
+  .nav-dots {
+    position: fixed; right: 1.5rem; top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex; flex-direction: column; gap: 1rem;
+  }
+  .nav-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+  }
+  .nav-dot.active { background: var(--gold); border-color: var(--gold); transform: scale(1.4); }
+
+  /* ───── SHARED SECTION STYLES ───── */
+  .section-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+  }
+  .section-tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+  }
+  .section-title {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    line-height: 1.1;
+    margin-bottom: 2.5rem;
+  }
+
+  /* ───── LETTER SECTION ───── */
+  #letter { background: linear-gradient(180deg, transparent, rgba(120,75,160,0.15), transparent); }
+
+  .letter-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2.5rem 2.5rem 2rem;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+  }
+  .letter-card::before {
+    content: '🎂';
+    position: absolute; top: -1rem; right: -1rem;
+    font-size: 8rem; opacity: 0.06;
+    transform: rotate(15deg);
+    pointer-events: none;
+  }
+  .letter-text {
+    font-size: 1.1rem;
+    line-height: 1.9;
+    color: rgba(255,255,255,0.85);
+  }
+  .letter-text p { margin-bottom: 1.2rem; }
+  .letter-text .highlight {
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .letter-sig {
+    margin-top: 2rem;
+    font-family: 'Pacifico', cursive;
+    font-size: 1.4rem;
+    color: var(--hot);
+  }
+
+  /* ───── PHOTO GALLERY ───── */
+  #gallery { }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  @media(max-width: 600px){ .gallery-grid { grid-template-columns: repeat(2,1fr); } }
+
+  .photo-card {
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .photo-card:hover {
+    transform: scale(1.05) rotate(-1deg);
+    box-shadow: 0 20px 50px rgba(255,215,0,0.2);
+  }
+  .photo-card:nth-child(even):hover { transform: scale(1.05) rotate(1deg); }
+
+  .photo-placeholder {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 0.5rem;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, rgba(255,107,53,0.2), rgba(120,75,160,0.2));
+  }
+  .photo-placeholder span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 0 1rem;
+  }
+  .photo-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 0.7rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    transform: translateY(100%);
+    transition: transform 0.3s;
+  }
+  .photo-card:hover .photo-label { transform: translateY(0); }
+
+  /* ───── QUIZ ───── */
+  #quiz { background: linear-gradient(180deg, transparent, rgba(0,245,255,0.05), transparent); }
+
+  .quiz-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2.5rem;
+    backdrop-filter: blur(12px);
+  }
+  .quiz-progress {
+    display: flex; justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.5);
+  }
+  .quiz-bar-wrap {
+    flex: 1; margin: 0 1rem;
+    height: 6px; background: rgba(255,255,255,0.1);
+    border-radius: 3px; overflow: hidden;
+  }
+  .quiz-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--hot));
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .quiz-q {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    margin-bottom: 1.5rem;
+    min-height: 3rem;
+  }
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+  @media(max-width:480px){ .quiz-options { grid-template-columns: 1fr; } }
+
+  .quiz-opt {
+    padding: 1rem 1.2rem;
+    border-radius: 14px;
+    border: 2px solid var(--border);
+    background: rgba(255,255,255,0.04);
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: left;
+  }
+  .quiz-opt:hover { border-color: var(--cyan); background: rgba(0,245,255,0.1); transform: translateY(-2px); }
+  .quiz-opt.correct { border-color: #00E676; background: rgba(0,230,118,0.15); }
+  .quiz-opt.wrong { border-color: #FF5252; background: rgba(255,82,82,0.15); }
+  .quiz-opt:disabled { cursor: default; }
+
+  .quiz-feedback {
+    margin-top: 1.2rem;
+    min-height: 2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--gold);
+    animation: fadeDown 0.4s ease;
+  }
+  .quiz-next {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.9rem;
+    border: none; border-radius: 14px;
+    background: linear-gradient(90deg, var(--purple), var(--hot));
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    display: none;
+  }
+  .quiz-next.visible { display: block; }
+  .quiz-next:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  .quiz-result {
+    text-align: center;
+    padding: 1rem 0;
+    display: none;
+  }
+  .quiz-result.visible { display: block; }
+  .quiz-result .score {
+    font-family: 'Pacifico', cursive;
+    font-size: 4rem;
+    color: var(--gold);
+  }
+  .quiz-result .result-msg {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.8);
+    margin-top: 1rem;
+  }
+  .quiz-result .replay {
+    margin-top: 2rem;
+    padding: 0.8rem 2.5rem;
+    border: 2px solid var(--gold);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--gold);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .quiz-result .replay:hover { background: var(--gold); color: var(--dark); }
+
+  /* ───── FOOTER ───── */
+  #footer {
+    text-align: center;
+    padding: 4rem 2rem;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.3);
+  }
+  #footer .big {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(2rem, 8vw, 5rem);
+    color: var(--gold);
+    display: block;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 30px rgba(255,215,0,0.4));
+    animation: pulse 2s ease infinite;
+  }
+
+  /* CONFETTI BURST BUTTON */
+  .burst-btn {
+    margin-top: 2.5rem;
+    padding: 1rem 2.8rem;
+    border: none; border-radius: 999px;
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    color: var(--dark);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 0 30px rgba(255,215,0,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .burst-btn:hover { transform: scale(1.07); box-shadow: 0 0 50px rgba(255,215,0,0.6); }
+
+  /* ───── KEYFRAMES ───── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+  }
+  @keyframes floatUp {
+    0%   { opacity: 0; transform: translateY(0) rotate(0deg); }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-100vh) rotate(360deg); }
+  }
+  @keyframes shimmer {
+    0%  { background-position: -200% center; }
+    100%{ background-position: 200% center; }
+  }
+
+  /* reveal on scroll */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<canvas id="bgCanvas"></canvas>
+
+<!-- NAV DOTS -->
+<nav class="nav-dots" id="navDots">
+  <div class="nav-dot active" data-target="hero" title="Home"></div>
+  <div class="nav-dot" data-target="letter" title="Letter"></div>
+  <div class="nav-dot" data-target="gallery" title="Gallery"></div>
+  <div class="nav-dot" data-target="quiz" title="Quiz"></div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section id="hero">
+  <div class="floaters" id="floaters"></div>
+  <div class="hero-badge">🎉 Today Is The Day!</div>
+  <h1 class="hero-name">Harsh Garg</h1>
+  <p class="hero-aka">— The Legendary Kannu —</p>
+  <p class="hero-subtitle">Wishing you the most epic birthday ever 🚀<br>made with ❤️ just for you</p>
+  <button class="scroll-btn" onclick="document.getElementById('letter').scrollIntoView({behavior:'smooth'})">
+    Open Your Gift 🎁
+  </button>
+</section>
+
+<!-- ══════════ LETTER ══════════ -->
+<section id="letter">
+  <div class="section-inner reveal">
+    <span class="section-tag">📜 A Letter For You</span>
+    <h2 class="section-title">Hey Kannu, this one's<br>from the heart ❤️</h2>
+    <div class="letter-card">
+      <div class="letter-text">
+        <p>Dear <span class="highlight">Harsh (a.k.a. Kannu)</span>,</p>
+        <p>Where do I even start? You're not just a friend — you're the kind of person who makes every ordinary moment feel like a highlight reel. Whether it's laughing at the most random things, having those 3AM convos that somehow make sense, or just being there when things get rough — you've been <span class="highlight">irreplaceable</span>.</p>
+        <p>On this very special day, I want you to know that the world is genuinely a better place with you in it. You bring energy, chaos, and the most wholesome vibes all at once — and honestly? That's a superpower.</p>
+        <p>May this year bring you everything you've been working towards — the <span class="highlight">success, the happiness, and every single dream</span> you've dared to dream. You deserve nothing less than extraordinary.</p>
+        <p>Here's to another year of epic memories, stupid jokes, and building something amazing together. <span class="highlight">Happy Birthday, brother.</span> 🥂</p>
+      </div>
+      <div class="letter-sig">— Your Best Friend 🎂</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ GALLERY ══════════ -->
+<section id="gallery">
+  <div class="section-inner reveal">
+    <span class="section-tag">📸 Memory Lane</span>
+    <h2 class="section-title">Our Best Moments,<br>Captured Forever 🌟</h2>
+    <div class="gallery-grid">
+        <div class="photo-card"><img src="img1.jpg" style="width:100%;height:100%;object-fit:cover;display:block;" /><div class="photo-label">The Iconic B&W Shot 🖤</div></div>
+        <div class="photo-card"><img src="img2.jpg" style="width:100%;height:100%;object-fit:cover;display:block;" /><div class="photo-label">Looking Clean 🔥</div></div>
+        <div class="photo-card"><img src="img3.jpg" style="width:100%;height:100%;object-fit:cover;display:block;" /><div class="photo-label">Golden Hour Gang 🌅</div></div>
+        <div class="photo-card"><img src="img4.jpg" style="width:100%;height:100%;object-fit:cover;display:block;" /><div class="photo-label">Sky Squad 😂</div></div>
+        <div class="photo-card"><img src="img5.jpg" style="width:100%;height:100%;object-fit:cover;display:block;" /><div class="photo-label">Lake Trip Crew 🏔️</div></div>
+        <div class="photo-card"><img src="img6.jpg" style="width:100%;height:100%;object-fit:cover;display:block;" /><div class="photo-label">Solo Mode 💙</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ QUIZ ══════════ -->
+<section id="quiz">
+  <div class="section-inner reveal">
+    <span class="section-tag">🧠 Friendship Quiz</span>
+    <h2 class="section-title">How Well Does Kannu<br>Know His Best Friend? 😏</h2>
+    <div class="quiz-box">
+      <div class="quiz-progress">
+        <span id="qNum">1 / 6</span>
+        <div class="quiz-bar-wrap"><div class="quiz-bar" id="qBar" style="width:16%"></div></div>
+        <span id="qScore">Score: 0</span>
+      </div>
+      <div class="quiz-q" id="quizQ">Loading...</div>
+      <div class="quiz-options" id="quizOpts"></div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+      <button class="quiz-next" id="quizNext" onclick="nextQuestion()">Next Question →</button>
+
+      <div class="quiz-result" id="quizResult">
+        <div class="score" id="finalScore">0/6</div>
+        <div class="result-msg" id="resultMsg"></div>
+        <button class="replay" onclick="startQuiz()">🔁 Play Again</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<section id="footer">
+  <span class="big">Happy Birthday! 🎂</span>
+  <p>Wishing you the most amazing year yet, Kannu 🎉</p>
+  <button class="burst-btn" onclick="bigConfetti()">🎊 Celebrate Again!</button>
+</section>
+
+<script>
+// ── CUSTOM CURSOR ──
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top  = e.clientY + 'px';
+});
+document.addEventListener('mousedown', () => cursor.classList.add('clicked'));
+document.addEventListener('mouseup',   () => cursor.classList.remove('clicked'));
+
+// ── FLOATING EMOJIS ──
+const emojis = ['🎂','🎉','🎊','✨','🥳','🎁','⭐','🔥','💫','🎈'];
+const floaters = document.getElementById('floaters');
+for(let i=0;i<20;i++){
+  const f = document.createElement('div');
+  f.className = 'floater';
+  f.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+  f.style.left = Math.random()*100 + '%';
+  f.style.animationDuration = (8+Math.random()*10) + 's';
+  f.style.animationDelay    = (Math.random()*10) + 's';
+  f.style.fontSize = (1.5+Math.random()*2) + 'rem';
+  floaters.appendChild(f);
+}
+
+// ── BG CANVAS (STAR PARTICLES) ──
+const canvas = document.getElementById('bgCanvas');
+const ctx    = canvas.getContext('2d');
+let W, H, stars=[], confettiBurst=[];
+
+function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+resize(); window.addEventListener('resize',resize);
+
+function makeStars(){
+  stars=[];
+  for(let i=0;i<120;i++) stars.push({
+    x:Math.random()*W, y:Math.random()*H,
+    r:Math.random()*1.5+0.3,
+    a:Math.random(), da:0.003+Math.random()*0.005,
+    c:['#FFD700','#FF3CAC','#00F5FF','#FF6B35','#fff'][Math.floor(Math.random()*5)]
+  });
+}
+makeStars();
+
+function makePiece(){
+  return {
+    x: Math.random()*W, y:-20,
+    vx:(Math.random()-0.5)*6, vy:3+Math.random()*5,
+    rot:Math.random()*360, drot:(Math.random()-0.5)*10,
+    size:8+Math.random()*10,
+    color:['#FFD700','#FF3CAC','#00F5FF','#FF6B35','#a78bfa','#00E676'][Math.floor(Math.random()*6)],
+    life:1, shape:Math.random()>0.5?'rect':'circle'
+  };
+}
+
+function bigConfetti(){
+  for(let i=0;i<200;i++) confettiBurst.push({...makePiece(),y:-Math.random()*600});
+}
+bigConfetti();
+
+function animateCanvas(){
+  ctx.clearRect(0,0,W,H);
+  // stars
+  stars.forEach(s=>{
+    s.a += s.da; if(s.a>1||s.a<0) s.da*=-1;
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=s.c; ctx.globalAlpha=s.a*0.7; ctx.fill(); ctx.globalAlpha=1;
+  });
+  // confetti
+  confettiBurst = confettiBurst.filter(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.12; p.rot+=p.drot; p.life-=0.008;
+    if(p.y>H+20||p.life<=0) return false;
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+    ctx.globalAlpha=p.life;
+    ctx.fillStyle=p.color;
+    if(p.shape==='rect') ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2);
+    else { ctx.beginPath(); ctx.arc(0,0,p.size/3,0,Math.PI*2); ctx.fill(); }
+    ctx.restore(); ctx.globalAlpha=1;
+    return true;
+  });
+  requestAnimationFrame(animateCanvas);
+}
+animateCanvas();
+
+// ── NAV DOTS ──
+const sections=['hero','letter','gallery','quiz'];
+const dots=document.querySelectorAll('.nav-dot');
+dots.forEach((d,i)=>{
+  d.addEventListener('click',()=>document.getElementById(sections[i]).scrollIntoView({behavior:'smooth'}));
+});
+window.addEventListener('scroll',()=>{
+  let cur=0;
+  sections.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(window.scrollY>=el.offsetTop-
